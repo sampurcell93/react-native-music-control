@@ -236,11 +236,6 @@ RCT_EXPORT_METHOD(enableBackgroundMode:(BOOL) enabled){
             }
         }
 
-        // Check if image was available otherwise don't do anything
-        if (image == nil) {
-            return;
-        }
-
         // check whether image is loaded
         CGImageRef cgref = [image CGImage];
         CIImage *cim = [image CIImage];
