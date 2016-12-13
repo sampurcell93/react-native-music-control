@@ -1,6 +1,7 @@
 #import "MusicControlManager.h"
 #import "RCTConvert.h"
 #import "RCTBridge.h"
+#import <RCTUtils.h>
 #import "RCTEventDispatcher.h"
 #import <AVFoundation/AVAudioSession.h>
 #import "SDWebImage/SDWebImageManager.h"
@@ -27,88 +28,107 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(setNowPlaying:(NSDictionary *) details)
 {
+	RCTExecuteOnMainQueue(^{
 
-    MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+		MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
 
-    // Create media dictionary from existing keys or create a new one, this way we can update single attributes if we want to
-    NSMutableDictionary *mediaDict = (center.nowPlayingInfo != nil) ? [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo] : [NSMutableDictionary dictionary];
+		// Create media dictionary from existing keys or create a new one, this way we can update single attributes if we want to
+		NSMutableDictionary *mediaDict = (center.nowPlayingInfo != nil) ? [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo] : [NSMutableDictionary dictionary];
 
-    if ([details objectForKey: @"albumTitle"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"albumTitle"] forKey:MPMediaItemPropertyAlbumTitle];
-    }
+		if ([details objectForKey: @"albumTitle"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"albumTitle"] forKey:MPMediaItemPropertyAlbumTitle];
+		}
 
-    if ([details objectForKey: @"trackCount"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"trackCount"] forKey:MPMediaItemPropertyAlbumTrackCount];
-    }
+		if ([details objectForKey: @"trackCount"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"trackCount"] forKey:MPMediaItemPropertyAlbumTrackCount];
+		}
 
-    if ([details objectForKey: @"trackNumber"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"trackNumber"] forKey:MPMediaItemPropertyAlbumTrackNumber];
-    }
+		if ([details objectForKey: @"trackNumber"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"trackNumber"] forKey:MPMediaItemPropertyAlbumTrackNumber];
+		}
 
-    if ([details objectForKey: @"artist"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"artist"] forKey:MPMediaItemPropertyArtist];
-    }
+		if ([details objectForKey: @"artist"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"artist"] forKey:MPMediaItemPropertyArtist];
+		}
 
-    if ([details objectForKey: @"composer"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"composer"] forKey:MPMediaItemPropertyComposer];
-    }
+		if ([details objectForKey: @"composer"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"composer"] forKey:MPMediaItemPropertyComposer];
+		}
 
-    if ([details objectForKey: @"discCount"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"discCount"] forKey:MPMediaItemPropertyDiscCount];
-    }
+		if ([details objectForKey: @"discCount"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"discCount"] forKey:MPMediaItemPropertyDiscCount];
+		}
 
-    if ([details objectForKey: @"discNumber"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"discNumber"] forKey:MPMediaItemPropertyDiscNumber];
-    }
+		if ([details objectForKey: @"discNumber"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"discNumber"] forKey:MPMediaItemPropertyDiscNumber];
+		}
 
-    if ([details objectForKey: @"genre"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"genre"] forKey:MPMediaItemPropertyGenre];
-    }
+		if ([details objectForKey: @"genre"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"genre"] forKey:MPMediaItemPropertyGenre];
+		}
 
-    if ([details objectForKey: @"persistentID"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"persistentID"] forKey:MPMediaItemPropertyPersistentID];
-    }
+		if ([details objectForKey: @"persistentID"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"persistentID"] forKey:MPMediaItemPropertyPersistentID];
+		}
 
-    if ([details objectForKey: @"playbackDuration"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"playbackDuration"] forKey:MPMediaItemPropertyPlaybackDuration];
-    }
+		if ([details objectForKey: @"playbackDuration"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"playbackDuration"] forKey:MPMediaItemPropertyPlaybackDuration];
+		}
 
-    if ([details objectForKey: @"title"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"title"] forKey:MPMediaItemPropertyTitle];
-    }
+		if ([details objectForKey: @"title"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"title"] forKey:MPMediaItemPropertyTitle];
+		}
 
-    if ([details objectForKey: @"elapsedPlaybackTime"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"elapsedPlaybackTime"] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-    }
+		if ([details objectForKey: @"elapsedPlaybackTime"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"elapsedPlaybackTime"] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+		}
 
-    if ([details objectForKey: @"playbackRate"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"playbackRate"] forKey:MPNowPlayingInfoPropertyPlaybackRate];
-    } else {
-        // In iOS Simulator, always include the MPNowPlayingInfoPropertyPlaybackRate key in your nowPlayingInfo dictionary
-        [mediaDict setValue:[NSNumber numberWithDouble:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
-    }
+		if ([details objectForKey: @"playbackRate"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"playbackRate"] forKey:MPNowPlayingInfoPropertyPlaybackRate];
+		} else {
+			// In iOS Simulator, always include the MPNowPlayingInfoPropertyPlaybackRate key in your nowPlayingInfo dictionary
+			[mediaDict setValue:[NSNumber numberWithDouble:1] forKey:MPNowPlayingInfoPropertyPlaybackRate];
+		}
 
-    if ([details objectForKey: @"playbackQueueIndex"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"playbackQueueIndex"] forKey:MPNowPlayingInfoPropertyPlaybackQueueIndex];
-    }
+		if ([details objectForKey: @"playbackQueueIndex"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"playbackQueueIndex"] forKey:MPNowPlayingInfoPropertyPlaybackQueueIndex];
+		}
 
-    if ([details objectForKey: @"playbackQueueCount"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"playbackQueueCount"] forKey:MPNowPlayingInfoPropertyPlaybackQueueCount];
-    }
+		if ([details objectForKey: @"playbackQueueCount"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"playbackQueueCount"] forKey:MPNowPlayingInfoPropertyPlaybackQueueCount];
+		}
 
-    if ([details objectForKey: @"chapterNumber"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"chapterNumber"] forKey:MPNowPlayingInfoPropertyChapterNumber];
-    }
+		if ([details objectForKey: @"chapterNumber"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"chapterNumber"] forKey:MPNowPlayingInfoPropertyChapterNumber];
+		}
 
-    if ([details objectForKey: @"chapterCount"] != nil) {
-        [mediaDict setValue:[details objectForKey: @"chapterCount"] forKey:MPNowPlayingInfoPropertyChapterCount];
-    }
+		if ([details objectForKey: @"chapterCount"] != nil) {
+			[mediaDict setValue:[details objectForKey: @"chapterCount"] forKey:MPNowPlayingInfoPropertyChapterCount];
+		}
 
-    center.nowPlayingInfo = mediaDict;
+		if ([details objectForKey: @"artwork"] == nil) {
+			center.nowPlayingInfo = mediaDict;
 
-    // Custom handling of artwork in another thread, will be loaded async
-    self.artworkUrl = details[@"artwork"];
-    [self updateNowPlayingArtwork];
+		} else{
+			self.artworkUrl = [details objectForKey: @"artwork"];
+			NSString *url = [details objectForKey: @"artwork"];
+			
+			[[[SDWebImageManager sharedManager] imageDownloader]
+			 downloadImageWithURL:[NSURL URLWithString:self.artworkUrl]
+			 options:SDWebImageDownloaderHighPriority | SDWebImageDownloaderContinueInBackground
+			 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+				 RCTExecuteOnMainQueue(^{
+					 if(finished && !error && [url isEqualToString:self.artworkUrl]){
+						 MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+						 MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
+						 [mediaDict setValue:artwork forKey:MPMediaItemPropertyArtwork];
+						 center.nowPlayingInfo = mediaDict;
+					 }
+				});
+			 }];
+		}
+	});
+
 }
 
 RCT_EXPORT_METHOD(resetNowPlaying)
@@ -216,26 +236,5 @@ RCT_EXPORT_METHOD(enableBackgroundMode:(BOOL) enabled){
     [self.bridge.eventDispatcher sendDeviceEventWithName:@"RNMusicControlEvent"
                                                  body:@{@"name": event}];
 }
-
-- (void)updateNowPlayingArtwork
-{
-	if(self.artworkUrl.length > 0){
-		NSString *url = [NSString stringWithString:self.artworkUrl];
-		
-			[[[SDWebImageManager sharedManager] imageDownloader]
-			  downloadImageWithURL:[NSURL URLWithString:self.artworkUrl]
-			  options:SDWebImageDownloaderHighPriority | SDWebImageDownloaderContinueInBackground
-			  progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
-				  if(finished && [url isEqualToString:self.artworkUrl]){
-					  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
-					  MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
-					  NSMutableDictionary *mediaDict = (center.nowPlayingInfo != nil) ? [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo] : [NSMutableDictionary dictionary];
-					  [mediaDict setValue:artwork forKey:MPMediaItemPropertyArtwork];
-					  center.nowPlayingInfo = mediaDict;
-				  }
-			  }];
-		}
-
-	}
 
 @end
