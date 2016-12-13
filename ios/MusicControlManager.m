@@ -219,21 +219,23 @@ RCT_EXPORT_METHOD(enableBackgroundMode:(BOOL) enabled){
 
 - (void)updateNowPlayingArtwork
 {
-	
-	NSString *url = [NSString stringWithString:self.artworkUrl];
-	
-	[[[SDWebImageManager sharedManager] imageDownloader]
-	  downloadImageWithURL:[NSURL URLWithString:self.artworkUrl]
-	  options:SDWebImageDownloaderHighPriority | SDWebImageDownloaderContinueInBackground
-	  progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
-		  if(finished && [url isEqualToString:self.artworkUrl]){
-			  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
-			  MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
-			  NSMutableDictionary *mediaDict = (center.nowPlayingInfo != nil) ? [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo] : [NSMutableDictionary dictionary];
-			  [mediaDict setValue:artwork forKey:MPMediaItemPropertyArtwork];
-			  center.nowPlayingInfo = mediaDict;
-		  }
-	 }];
+	if(self.artworkUrl.length > 0){
+		NSString *url = [NSString stringWithString:self.artworkUrl];
+		
+			[[[SDWebImageManager sharedManager] imageDownloader]
+			  downloadImageWithURL:[NSURL URLWithString:self.artworkUrl]
+			  options:SDWebImageDownloaderHighPriority | SDWebImageDownloaderContinueInBackground
+			  progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+				  if(finished && [url isEqualToString:self.artworkUrl]){
+					  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+					  MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
+					  NSMutableDictionary *mediaDict = (center.nowPlayingInfo != nil) ? [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo] : [NSMutableDictionary dictionary];
+					  [mediaDict setValue:artwork forKey:MPMediaItemPropertyArtwork];
+					  center.nowPlayingInfo = mediaDict;
+				  }
+			  }];
+		}
+
 	}
 
 @end
