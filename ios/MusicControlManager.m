@@ -3,6 +3,8 @@
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 #import <AVFoundation/AVAudioSession.h>
+#import "SDWebImage/SDWebImageManager.h"
+#import "SDWebImage/SDWebImageDownloader.h"
 
 @import MediaPlayer;
 
@@ -217,43 +219,21 @@ RCT_EXPORT_METHOD(enableBackgroundMode:(BOOL) enabled){
 
 - (void)updateNowPlayingArtwork
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        NSString *url = self.artworkUrl;
-        UIImage *image = nil;
-        // check whether artwork path is present
-        if (![url isEqual: @""]) {
-            // artwork is url download from the interwebs
-            if ([url hasPrefix: @"http://"] || [url hasPrefix: @"https://"]) {
-                NSURL *imageURL = [NSURL URLWithString:url];
-                NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-                image = [UIImage imageWithData:imageData];
-            } else {
-                // artwork is local. so create it from a UIImage
-                BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:url];
-                if (fileExists) {
-                    image = [UIImage imageNamed:url];
-                }
-            }
-        }
-
-        // check whether image is loaded
-        CGImageRef cgref = [image CGImage];
-        CIImage *cim = [image CIImage];
-
-        if (cim != nil || cgref != NULL) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-
-                // Check if URL wasn't changed in the meantime
-                if ([url isEqual:self.artworkUrl]) {
-                    MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
-                    MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
-                    NSMutableDictionary *mediaDict = (center.nowPlayingInfo != nil) ? [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo] : [NSMutableDictionary dictionary];
-                    [mediaDict setValue:artwork forKey:MPMediaItemPropertyArtwork];
-                    center.nowPlayingInfo = mediaDict;
-                }
-            });
-        }
-    });
-}
+	
+	NSString *url = [NSString stringWithString:self.artworkUrl];
+	
+	[[[SDWebImageManager sharedManager] imageDownloader]
+	  downloadImageWithURL:[NSURL URLWithString:self.artworkUrl]
+	  options:SDWebImageDownloaderHighPriority | SDWebImageDownloaderContinueInBackground
+	  progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+		  if(finished && [url isEqualToString:self.artworkUrl]){
+			  MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
+			  MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
+			  NSMutableDictionary *mediaDict = (center.nowPlayingInfo != nil) ? [[NSMutableDictionary alloc] initWithDictionary: center.nowPlayingInfo] : [NSMutableDictionary dictionary];
+			  [mediaDict setValue:artwork forKey:MPMediaItemPropertyArtwork];
+			  center.nowPlayingInfo = mediaDict;
+		  }
+	 }];
+	}
 
 @end
