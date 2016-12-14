@@ -109,7 +109,7 @@ RCT_EXPORT_METHOD(setNowPlaying:(NSDictionary *) details)
 		if ([details objectForKey: @"artwork"] == nil) {
 			center.nowPlayingInfo = mediaDict;
 
-		} else{
+		} else {
 			self.artworkUrl = [details objectForKey: @"artwork"];
 			NSString *url = [details objectForKey: @"artwork"];
 			
@@ -122,6 +122,9 @@ RCT_EXPORT_METHOD(setNowPlaying:(NSDictionary *) details)
 						 MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
 						 MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
 						 [mediaDict setValue:artwork forKey:MPMediaItemPropertyArtwork];
+						 center.nowPlayingInfo = mediaDict;
+					 } else{
+						 MPNowPlayingInfoCenter *center = [MPNowPlayingInfoCenter defaultCenter];
 						 center.nowPlayingInfo = mediaDict;
 					 }
 				});
