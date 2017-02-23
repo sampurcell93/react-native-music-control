@@ -1,8 +1,8 @@
 #import "MusicControlManager.h"
-#import "RCTConvert.h"
-#import "RCTBridge.h"
+#import <React/RCTConvert.h>
+#import <React/RCTBridge.h>
 #import <RCTUtils.h>
-#import "RCTEventDispatcher.h"
+#import <React/RCTEventDispatcher.h>
 #import <AVFoundation/AVAudioSession.h>
 #import "SDWebImage/SDWebImageManager.h"
 #import "SDWebImage/SDWebImageDownloader.h"
